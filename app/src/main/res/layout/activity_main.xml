@@ -1,0 +1,25 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <SeekBar android:id="@+id/seekBarDuck1" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck1_walk"/>
+        <SeekBar android:id="@+id/seekBarDuck2" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
+        <SeekBar android:id="@+id/seekBarDuck3" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
+        <SeekBar android:id="@+id/seekBarDuck4" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
+
+        <RadioGroup android:id="@+id/betGroup" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <RadioButton android:id="@+id/betDuck1" android:text="Vịt 1"/>
+            <RadioButton android:id="@+id/betDuck2" android:text="Vịt 2"/>
+            <RadioButton android:id="@+id/betDuck3" android:text="Vịt 3"/>
+            <RadioButton android:id="@+id/betDuck4" android:text="Vịt 4"/>
+        </RadioGroup>
+
+        <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Start"/>
+        <Button android:id="@+id/btnReset" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Reset"/>
+    </LinearLayout>
+</ScrollView>
