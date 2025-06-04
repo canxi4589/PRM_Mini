@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -15,97 +16,104 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    SeekBar[] seekBars = new SeekBar[4];
-    Runnable[] runnables = new Runnable[4];
-    Handler handler = new Handler();
-    Random random = new Random();
-    boolean isRacing = false;
-    RadioGroup betGroup;
-    Button btnStart, btnReset;
+    private SeekBar seekBar1, seekBar2, seekBar3, seekBar4;
+    private Button btnStart, btnReset;
+    private RadioGroup betGroup;
+
+    private Handler handler = new Handler();
+    private boolean isRacing = false;
+
+    private Runnable raceRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isRacing) return;
+
+            // Randomly increase progress for each duck
+            int increment1 = new Random().nextInt(5); // 0 to 4
+            int increment2 = new Random().nextInt(5);
+            int increment3 = new Random().nextInt(5);
+            int increment4 = new Random().nextInt(5);
+
+            seekBar1.setProgress(seekBar1.getProgress() + increment1);
+            seekBar2.setProgress(seekBar2.getProgress() + increment2);
+            seekBar3.setProgress(seekBar3.getProgress() + increment3);
+            seekBar4.setProgress(seekBar4.getProgress() + increment4);
+
+            // Check if any duck has finished
+            if (seekBar1.getProgress() >= 100 || seekBar2.getProgress() >= 100 ||
+                    seekBar3.getProgress() >= 100 || seekBar4.getProgress() >= 100) {
+                isRacing = false;
+
+                int winner = 0;
+                if (seekBar1.getProgress() >= 100) winner = 1;
+                else if (seekBar2.getProgress() >= 100) winner = 2;
+                else if (seekBar3.getProgress() >= 100) winner = 3;
+                else if (seekBar4.getProgress() >= 100) winner = 4;
+
+                btnStart.setEnabled(true);
+                Toast.makeText(MainActivity.this, "Duck " + winner + " wins!", Toast.LENGTH_LONG).show();
+
+                // Check bet result
+                int selectedId = betGroup.getCheckedRadioButtonId();
+                if (selectedId != -1) {
+                    RadioButton selectedButton = findViewById(selectedId);
+                    if (selectedButton.getText().toString().contains(String.valueOf(winner))) {
+                        Toast.makeText(MainActivity.this, "You won the bet!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "You lost the bet.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                return;
+            }
+
+            handler.postDelayed(this, 100); // repeat every 100ms
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        seekBars[0] = findViewById(R.id.seekBarDuck1);
-        seekBars[1] = findViewById(R.id.seekBarDuck2);
-        seekBars[2] = findViewById(R.id.seekBarDuck3);
-        seekBars[3] = findViewById(R.id.seekBarDuck4);
+        seekBar1 = findViewById(R.id.seekBarDuck1);
+        seekBar2 = findViewById(R.id.seekBarDuck2);
+        seekBar3 = findViewById(R.id.seekBarDuck3);
+        seekBar4 = findViewById(R.id.seekBarDuck4);
 
-        for (SeekBar sb : seekBars) {
-            sb.setThumb(getResources().getDrawable(R.drawable.duck_idle));
-        }
-
-        betGroup = findViewById(R.id.betGroup);
         btnStart = findViewById(R.id.btnStart);
         btnReset = findViewById(R.id.btnReset);
+        betGroup = findViewById(R.id.betGroup);
 
-        btnStart.setOnClickListener(v -> startRace());
-        btnReset.setOnClickListener(v -> resetRace());
+        btnStart.setOnClickListener(v -> {
+            resetRace();
+            isRacing = true;
+            btnStart.setEnabled(false);
+            handler.post(raceRunnable);
+        });
+
+        btnReset.setOnClickListener(v -> {
+            handler.removeCallbacks(raceRunnable);
+            resetRace();
+            btnStart.setEnabled(true);
+            isRacing = false;
+        });
+
+        disableSeekbarsTouch(); // prevent user cheating
     }
 
-    void startRace() {
-        if (isRacing) return;
-        isRacing = true;
-
-        for (int i = 0; i < 4; i++) {
-            final int index = i;
-            animateDuck(seekBars[i], R.drawable.duck1_walk);
-            runnables[i] = new Runnable() {
-                @Override
-                public void run() {
-                    if (seekBars[index].getProgress() >= 100) {
-                        endRace(index);
-                        return;
-                    }
-                    seekBars[index].setProgress(seekBars[index].getProgress() + random.nextInt(5));
-                    handler.postDelayed(this, 100);
-                }
-            };
-            handler.post(runnables[i]);
-        }
+    private void resetRace() {
+        seekBar1.setProgress(0);
+        seekBar2.setProgress(0);
+        seekBar3.setProgress(0);
+        seekBar4.setProgress(0);
     }
 
-    void endRace(int winnerIndex) {
-        isRacing = false;
-        for (Runnable r : runnables) {
-            handler.removeCallbacks(r);
-        }
-        for (SeekBar sb : seekBars) {
-            animateDuck(sb, R.drawable.duck_idle);
-        }
-
-        int betId = betGroup.getCheckedRadioButtonId();
-        int bet = -1;
-        if (betId == R.id.betDuck1) bet = 0;
-        else if (betId == R.id.betDuck2) bet = 1;
-        else if (betId == R.id.betDuck3) bet = 2;
-        else if (betId == R.id.betDuck4) bet = 3;
-
-        if (bet == winnerIndex) {
-            Toast.makeText(this, "Bạn thắng cược!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Thua rồi!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    void resetRace() {
-        for (Runnable r : runnables) {
-            handler.removeCallbacks(r);
-        }
-        for (SeekBar sb : seekBars) {
-            sb.setProgress(0);
-            animateDuck(sb, R.drawable.duck_idle);
-        }
-        isRacing = false;
-    }
-
-    void animateDuck(SeekBar seekBar, int drawableRes) {
-        Drawable thumb = getResources().getDrawable(drawableRes);
-        seekBar.setThumb(thumb);
-        if (thumb instanceof AnimationDrawable) {
-            ((AnimationDrawable) thumb).start();
+    private void disableSeekbarsTouch() {
+        // Prevent user from manually moving the SeekBars
+        SeekBar[] bars = {seekBar1, seekBar2, seekBar3, seekBar4};
+        for (SeekBar sb : bars) {
+            sb.setOnTouchListener((v, event) -> true);
         }
     }
 }
