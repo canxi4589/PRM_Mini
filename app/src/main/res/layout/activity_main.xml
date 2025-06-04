@@ -7,10 +7,10 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <SeekBar android:id="@+id/seekBarDuck1" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck1_walk"/>
-        <SeekBar android:id="@+id/seekBarDuck2" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
-        <SeekBar android:id="@+id/seekBarDuck3" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
-        <SeekBar android:id="@+id/seekBarDuck4" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="0" android:thumb="@drawable/duck_idle"/>
+        <SeekBar android:id="@+id/seekBarDuck1" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck1" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
+        <SeekBar android:id="@+id/seekBarDuck2" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck2" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
+        <SeekBar android:id="@+id/seekBarDuck3" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck3" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
+        <SeekBar android:id="@+id/seekBarDuck4" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck4" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
 
         <RadioGroup android:id="@+id/betGroup" android:layout_width="wrap_content" android:layout_height="wrap_content">
             <RadioButton android:id="@+id/betDuck1" android:text="Vịt 1"/>
