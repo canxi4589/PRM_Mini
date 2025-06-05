@@ -1,3 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DuckRace</string>
+    <string name="app_name">MiniDuck Race</string>
+
+    <!-- Player Setup Screen -->
+    <string name="title_player_setup">Player Setup</string>
+    <string name="label_select_players">Select Number of Players:</string>
+    <string name="player_name_hint">Player %d Name</string>
+    <string name="btn_continue">Continue</string>
+    <string name="duck_race_logo">Duck Race Logo</string>
+
+    <!-- Betting Screen -->
+    <string name="title_betting">Place Your Bets</string>
+    <string name="player_turn">%s\'s Turn</string>
+    <string name="select_ducks">Select Your Duck(s):</string>
+    <string name="duck_yellow">Yellow Duck</string>
+    <string name="duck_red">Red Duck</string>
+    <string name="duck_blue">Blue Duck</string>
+    <string name="duck_green">Green Duck</string>
+    <string name="btn_place_bet">Place Bet</string>
+    <string name="btn_start_race">START RACE</string>
+
+    <!-- Race Screen -->
+    <string name="title_race">Duck Race</string>
+    <string name="race_in_progress">Race in progress…</string>
+
+    <!-- Results Screen -->
+    <string name="title_results">Race Results</string>
+    <string name="winner_announcement">%s\'s duck won the race!</string>
+    <string name="play_again">Play Again</string>
 </resources>
+

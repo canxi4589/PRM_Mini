@@ -13,7 +13,7 @@
         android:theme="@style/Theme.DuckRace"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".PlayerSelectionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".BettingActivity" />
+        <activity android:name=".RaceActivity" />
+        <activity android:name=".ResultActivity" />
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
