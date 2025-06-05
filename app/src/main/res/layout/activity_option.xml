@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@drawable/background_main"
+    android:gravity="center"
+    android:id="@+id/main">
+
+    <TextView
+        android:id="@+id/welcomeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chào mừng!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:id="@+id/balanceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số dư: 0 VND"
+        android:textSize="18sp"
+        android:textColor="#FFD700"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🏇 BẮT ĐẦU ĐUA VỊT"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/button_primary"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="15dp"
+        android:padding="15dp" />
+
+    <Button
+        android:id="@+id/addMoneyButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💰 NẠP TIỀN"
+        android:textSize="16sp"
+        android:background="@drawable/button_secondary"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="15dp"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/instructionsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📖 HƯỚNG DẪN"
+        android:textSize="16sp"
+        android:background="@drawable/button_secondary"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="15dp"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🚪 ĐĂNG XUẤT"
+        android:textSize="16sp"
+        android:background="@drawable/button_danger"
+        android:textColor="#FFFFFF"
+        android:padding="12dp" />
+
+</LinearLayout>
