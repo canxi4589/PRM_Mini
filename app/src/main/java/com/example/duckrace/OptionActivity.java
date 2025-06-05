@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class OptionActivity extends AppCompatActivity {
     private TextView welcomeText, balanceText;
-    private Button playButton, addMoneyButton, instructionsButton, logoutButton;
+    private Button playButton, addMoneyButton, instructionsButton, logoutButton, pickNumOfPlayers;
     private SharedPreferences prefs;
     private MediaPlayer backgroundMusic;
     @Override
@@ -46,6 +46,7 @@ public class OptionActivity extends AppCompatActivity {
         addMoneyButton = findViewById(R.id.addMoneyButton);
         instructionsButton = findViewById(R.id.instructionsButton);
         logoutButton = findViewById(R.id.logoutButton);
+        pickNumOfPlayers = findViewById(R.id.pickNumOfPlayers);
     }
 
     private void setupListeners() {
@@ -60,6 +61,9 @@ public class OptionActivity extends AppCompatActivity {
 //        instructionsButton.setOnClickListener(v -> {
 //            startActivity(new Intent(this, InstructionsActivity.class));
 //        });
+        pickNumOfPlayers.setOnClickListener(v -> {
+           startActivity(new Intent(this, PlayerSelectionActivity.class));
+        });
 
         logoutButton.setOnClickListener(v -> {
             prefs.edit().putBoolean("isLoggedIn", false).apply();
