@@ -1,6 +1,5 @@
 package com.example.duckrace;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,15 +8,21 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText usernameEdit, passwordEdit;
     private Button loginButton, registerButton;
     private SharedPreferences prefs;
 
-    // Static user data
-    private static final String[] USERNAMES = {"admin", "player1", "player2", "test"};
-    private static final String[] PASSWORDS = {"123456", "123456", "123456", "123456"};
+    public static final List<User> USERS = new ArrayList<>(Arrays.asList(
+            new User("admin", "123456", 1000),
+            new User("player1", "123456", 1000),
+            new User("player2", "123456", 1000),
+            new User("test", "123456", 1000)
+    ));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                 prefs.edit()
                         .putBoolean("isLoggedIn", true)
                         .putString("username", username)
-                        .putInt("balance", prefs.getInt("balance_" + username, 1000))
+                        .putInt("balance", prefs.getInt("balance_" + username, getUserBalance(username)))
                         .apply();
 
                 startActivity(new Intent(this, OptionActivity.class));
@@ -68,8 +73,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateLogin(String username, String password) {
-        for (int i = 0; i < USERNAMES.length; i++) {
-            if (USERNAMES[i].equals(username) && PASSWORDS[i].equals(password)) {
+        // Check static users
+        for (User user : USERS) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 return true;
             }
         }
@@ -77,5 +83,14 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user was registered
         String savedPassword = prefs.getString("user_" + username, "");
         return !savedPassword.isEmpty() && savedPassword.equals(password);
+    }
+
+    private int getUserBalance(String username) {
+        for (User user : USERS) {
+            if (user.getUsername().equals(username)) {
+                return user.getBalance();
+            }
+        }
+        return 1000;
     }
 }

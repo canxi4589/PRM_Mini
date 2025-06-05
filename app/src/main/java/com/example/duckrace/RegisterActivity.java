@@ -1,7 +1,5 @@
 package com.example.duckrace;
 
-// RegisterActivity.java
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
@@ -59,17 +57,23 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check if username already exists
+            for (User user : LoginActivity.USERS) {
+                if (user.getUsername().equals(username)) {
+                    Toast.makeText(this, "Tên đăng nhập đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
             if (prefs.contains("user_" + username)) {
                 Toast.makeText(this, "Tên đăng nhập đã tồn tại", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Register user
             prefs.edit()
                     .putString("user_" + username, password)
-                    .putInt("balance_" + username, 1000) // Starting balance
+                    .putInt("balance_" + username, 1000)
                     .apply();
+
 
             Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
             finish();
