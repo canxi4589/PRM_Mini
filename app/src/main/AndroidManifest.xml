@@ -32,6 +32,7 @@
         <activity android:name=".RaceActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".AddMoneyActivity" />
 
     </application>
 

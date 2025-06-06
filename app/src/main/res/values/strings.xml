@@ -28,5 +28,17 @@
     <string name="title_results">Race Results</string>
     <string name="winner_announcement">%s\'s duck won the race!</string>
     <string name="play_again">Play Again</string>
+
+    <!-- Add money Screen -->
+    <string name="enter_amount">Nhập số tiền cần nạp</string>
+    <string name="example_amount">VD: 100000</string>
+    <string name="button_50k">50K</string>
+    <string name="value_50k">50000</string>
+    <string name="button_100k">100K</string>
+    <string name="value_100k">100000</string>
+    <string name="button_200k">200K</string>
+    <string name="value_200k">200000</string>
+    <string name="confirm_recharge">💳 XÁC NHẬN NẠP TIỀN</string>
+    <string name="button_back">🔙 Quay lại</string>
 </resources>
 
