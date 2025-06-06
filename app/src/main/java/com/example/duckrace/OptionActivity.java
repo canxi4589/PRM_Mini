@@ -54,9 +54,11 @@ public class OptionActivity extends AppCompatActivity {
             startActivity(new Intent(this, MainActivity.class));
         });
 
-//        addMoneyButton.setOnClickListener(v -> {
-//            startActivity(new Intent(this, AddMoneyActivity.class));
-//        });
+        addMoneyButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddMoneyActivity.class);
+            startActivity(intent);
+            finish();
+        });
 //
 //        instructionsButton.setOnClickListener(v -> {
 //            startActivity(new Intent(this, InstructionsActivity.class));
@@ -74,7 +76,7 @@ public class OptionActivity extends AppCompatActivity {
 
     private void updateUI() {
         String username = prefs.getString("username", "Player");
-        int balance = prefs.getInt("balance", 1000);
+        int balance = prefs.getInt("balance_" + username, 1000);
 
         welcomeText.setText("Chào mừng, " + username + "!");
         balanceText.setText("Số dư: " + balance + " VND");
