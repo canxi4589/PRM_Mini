@@ -60,7 +60,7 @@ public class WinActivity extends AppCompatActivity {
 
     private void setupListeners() {
         playAgainButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, RaceActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("currentUser", currentUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -68,7 +68,7 @@ public class WinActivity extends AppCompatActivity {
         });
 
         mainMenuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, OptionActivity.class);
             intent.putExtra("currentUser", currentUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
