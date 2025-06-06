@@ -16,7 +16,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameEdit, passwordEdit;
     private Button loginButton, registerButton;
     private SharedPreferences prefs;
-
     public static final List<User> USERS = new ArrayList<>(Arrays.asList(
             new User("admin", "123456", 1000),
             new User("player1", "123456", 1000),

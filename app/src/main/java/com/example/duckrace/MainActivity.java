@@ -1,119 +1,219 @@
 package com.example.duckrace;
 
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
+import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.Toast;
-
+import android.view.View;
+import android.view.animation.LinearInterpolator;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.Random;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
-
-    private SeekBar seekBar1, seekBar2, seekBar3, seekBar4;
-    private Button btnStart, btnReset;
-    private RadioGroup betGroup;
-
-    private Handler handler = new Handler();
+    private ListView horseListView;
+    private Button startButton, resetButton, backButton;
+    private TextView balanceText;
+    private DuckRaceAdapter adapter;
+    private List<Duck> horses;
+    private SharedPreferences prefs;
+    private MediaPlayer raceSound;
     private boolean isRacing = false;
-
-    private Runnable raceRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!isRacing) return;
-
-            // Randomly increase progress for each duck
-            int increment1 = new Random().nextInt(5); // 0 to 4
-            int increment2 = new Random().nextInt(5);
-            int increment3 = new Random().nextInt(5);
-            int increment4 = new Random().nextInt(5);
-
-            seekBar1.setProgress(seekBar1.getProgress() + increment1);
-            seekBar2.setProgress(seekBar2.getProgress() + increment2);
-            seekBar3.setProgress(seekBar3.getProgress() + increment3);
-            seekBar4.setProgress(seekBar4.getProgress() + increment4);
-
-            // Check if any duck has finished
-            if (seekBar1.getProgress() >= 100 || seekBar2.getProgress() >= 100 ||
-                    seekBar3.getProgress() >= 100 || seekBar4.getProgress() >= 100) {
-                isRacing = false;
-
-                int winner = 0;
-                if (seekBar1.getProgress() >= 100) winner = 1;
-                else if (seekBar2.getProgress() >= 100) winner = 2;
-                else if (seekBar3.getProgress() >= 100) winner = 3;
-                else if (seekBar4.getProgress() >= 100) winner = 4;
-
-                btnStart.setEnabled(true);
-                Toast.makeText(MainActivity.this, "Duck " + winner + " wins!", Toast.LENGTH_LONG).show();
-
-                // Check bet result
-                int selectedId = betGroup.getCheckedRadioButtonId();
-                if (selectedId != -1) {
-                    RadioButton selectedButton = findViewById(selectedId);
-                    if (selectedButton.getText().toString().contains(String.valueOf(winner))) {
-                        Toast.makeText(MainActivity.this, "You won the bet!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, "You lost the bet.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                return;
-            }
-
-            handler.postDelayed(this, 100); // repeat every 100ms
-        }
-    };
+    private Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        seekBar1 = findViewById(R.id.seekBarDuck1);
-        seekBar2 = findViewById(R.id.seekBarDuck2);
-        seekBar3 = findViewById(R.id.seekBarDuck3);
-        seekBar4 = findViewById(R.id.seekBarDuck4);
+        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
 
-        btnStart = findViewById(R.id.btnStart);
-        btnReset = findViewById(R.id.btnReset);
-        betGroup = findViewById(R.id.betGroup);
+        initViews();
+        setupHorses();
+        setupListeners();
+        updateBalance();
+    }
 
-        btnStart.setOnClickListener(v -> {
-            resetRace();
-            isRacing = true;
-            btnStart.setEnabled(false);
-            handler.post(raceRunnable);
+    private void initViews() {
+        horseListView = findViewById(R.id.horseListView);
+        startButton = findViewById(R.id.startButton);
+        resetButton = findViewById(R.id.resetButton);
+        backButton = findViewById(R.id.backButton);
+        balanceText = findViewById(R.id.balanceText);
+    }
+
+    private void setupHorses() {
+        horses = new ArrayList<>();
+        horses.add(new Duck("Thunder", "🐎", 0, 0));
+        horses.add(new Duck("Lightning", "🐴", 0, 0));
+        horses.add(new Duck("Storm", "🦄", 0, 0));
+        horses.add(new Duck("Wind", "🐎", 0, 0));
+        horses.add(new Duck("Fire", "🐴", 0, 0));
+
+        adapter = new DuckRaceAdapter(this, horses, prefs);
+        horseListView.setAdapter(adapter);
+    }
+
+    private void setupListeners() {
+        startButton.setOnClickListener(v -> {
+            if (!isRacing) {
+                startRace();
+            }
         });
 
-        btnReset.setOnClickListener(v -> {
-            handler.removeCallbacks(raceRunnable);
-            resetRace();
-            btnStart.setEnabled(true);
-            isRacing = false;
+        resetButton.setOnClickListener(v -> {
+            if (!isRacing) {
+                resetRace();
+            }
         });
 
-        disableSeekbarsTouch(); // prevent user cheating
+        backButton.setOnClickListener(v -> {
+            if (!isRacing) {
+                finish();
+            }
+        });
+    }
+
+    private void startRace() {
+        // Check if any bets were placed
+        boolean hasBets = false;
+        int totalBetAmount = 0;
+
+        for (Duck horse : horses) {
+            if (horse.getBetAmount() > 0) {
+                hasBets = true;
+                totalBetAmount += horse.getBetAmount();
+            }
+        }
+
+        if (!hasBets) {
+            Toast.makeText(this, "Vui lòng đặt cược trước khi bắt đầu!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int currentBalance = prefs.getInt("balance", 0);
+        if (totalBetAmount > currentBalance) {
+            Toast.makeText(this, "Số dư không đủ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        isRacing = true;
+        startButton.setEnabled(false);
+        resetButton.setEnabled(false);
+        backButton.setEnabled(false);
+
+        // Deduct bet amounts from balance
+        prefs.edit().putInt("balance", currentBalance - totalBetAmount).apply();
+        updateBalance();
+
+//        playRaceSound();
+        simulateRace();
+    }
+
+    private void simulateRace() {
+        Handler handler = new Handler();
+        final int[] raceStep = {0};
+        final int maxSteps = 100;
+
+        Runnable raceRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (raceStep[0] < maxSteps) {
+                    // Update horse positions
+                    for (Duck horse : horses) {
+                        int speed = random.nextInt(3) + 1; // Random speed 1-3
+                        horse.setPosition(Math.min(100, horse.getPosition() + speed));
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    raceStep[0]++;
+
+                    // Check for winner
+                    Duck winner = null;
+                    for (Duck horse : horses) {
+                        if (horse.getPosition() >= 100) {
+                            winner = horse;
+                            break;
+                        }
+                    }
+
+                    if (winner != null) {
+                        finishRace(winner);
+                    } else {
+                        handler.postDelayed(this, 100);
+                    }
+                } else {
+                    // Time limit reached, find horse with highest position
+                    Duck winner = Collections.max(horses,
+                            Comparator.comparingInt(Duck::getPosition));
+                    finishRace(winner);
+                }
+            }
+        };
+
+        handler.post(raceRunnable);
+    }
+
+    private void finishRace(Duck winner) {
+        isRacing = false;
+        startButton.setEnabled(true);
+        resetButton.setEnabled(true);
+        backButton.setEnabled(true);
+
+        if (raceSound != null) {
+            raceSound.stop();
+        }
+
+        // Calculate winnings
+        int totalWinnings = 0;
+        if (winner.getBetAmount() > 0) {
+            totalWinnings = winner.getBetAmount() * 5; // 5x multiplier for winner
+        }
+
+        // Update balance
+        int currentBalance = prefs.getInt("balance", 0);
+        prefs.edit().putInt("balance", currentBalance + totalWinnings).apply();
+
+        // Show result
+        Intent resultIntent = new Intent(this, WinActivity.class);
+        resultIntent.putExtra("winner", winner.getName());
+        resultIntent.putExtra("winnings", totalWinnings);
+        startActivity(resultIntent);
     }
 
     private void resetRace() {
-        seekBar1.setProgress(0);
-        seekBar2.setProgress(0);
-        seekBar3.setProgress(0);
-        seekBar4.setProgress(0);
+        for (Duck horse : horses) {
+            horse.setPosition(0);
+            horse.setBetAmount(0);
+        }
+        adapter.notifyDataSetChanged();
+        updateBalance();
     }
 
-    private void disableSeekbarsTouch() {
-        // Prevent user from manually moving the SeekBars
-        SeekBar[] bars = {seekBar1, seekBar2, seekBar3, seekBar4};
-        for (SeekBar sb : bars) {
-            sb.setOnTouchListener((v, event) -> true);
+    private void updateBalance() {
+        int balance = prefs.getInt("balance", 0);
+        balanceText.setText("Số dư: " + balance + " VND");
+    }
+
+//    private void playRaceSound() {
+//        try {
+//            raceSound = MediaPlayer.create(this, R.raw.race_sound);
+//            if (raceSound != null) {
+//                raceSound.start();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (raceSound != null) {
+            raceSound.release();
+            raceSound = null;
         }
     }
 }
