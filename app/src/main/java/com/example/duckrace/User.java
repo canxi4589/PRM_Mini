@@ -1,6 +1,8 @@
 package com.example.duckrace;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String password;
     private int balance;
@@ -21,5 +23,9 @@ public class User {
 
     public int getBalance() {
         return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
     }
 }

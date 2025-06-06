@@ -1,59 +1,69 @@
 package com.example.duckrace;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
-    private ListView horseListView;
-    private Button startButton, resetButton, backButton;
+public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.OnBetPlacedListener {
     private TextView balanceText;
-    private DuckRaceAdapter adapter;
-    private List<Duck> horses;
-    private SharedPreferences prefs;
+    private Button startButton;
+    private Button resetButton;
+    private Button backButton;
+    private ListView raceTrackList;
+    private User currentUser;
     private MediaPlayer raceSound;
     private boolean isRacing = false;
     private Random random = new Random();
+    private Handler handler = new Handler();
+    private List<Duck> ducks;
+    private RaceTrackAdapter adapter;
+    private int trackWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_race_track);
 
-        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
+        // Get current user from intent
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser == null) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         initViews();
-        setupHorses();
+        initializeDucks();
         setupListeners();
         updateBalance();
+
+        // Initialize adapter
+        adapter = new RaceTrackAdapter(this, ducks, currentUser, this);
+        raceTrackList.setAdapter(adapter);
+
+        // Get track width after layout is ready
+        raceTrackList.post(() -> {
+            trackWidth = raceTrackList.getWidth() - 200; // Account for padding and margins
+        });
     }
 
     private void initViews() {
-        horseListView = findViewById(R.id.horseListView);
+        balanceText = findViewById(R.id.balanceText);
         startButton = findViewById(R.id.startButton);
         resetButton = findViewById(R.id.resetButton);
         backButton = findViewById(R.id.backButton);
-        balanceText = findViewById(R.id.balanceText);
-    }
-
-    private void setupHorses() {
-        horses = new ArrayList<>();
-        horses.add(new Duck("Thunder", "🐎", 0, 0));
-        horses.add(new Duck("Lightning", "🐴", 0, 0));
-        horses.add(new Duck("Storm", "🦄", 0, 0));
-        horses.add(new Duck("Wind", "🐎", 0, 0));
-        horses.add(new Duck("Fire", "🐴", 0, 0));
-
-        adapter = new DuckRaceAdapter(this, horses, prefs);
-        horseListView.setAdapter(adapter);
+        raceTrackList = findViewById(R.id.raceTrackList);
     }
 
     private void setupListeners() {
@@ -71,92 +81,107 @@ public class MainActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> {
             if (!isRacing) {
+                Intent intent = new Intent();
+                intent.putExtra("currentUser", currentUser);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
     }
 
     private void startRace() {
-        // Check if any bets were placed
+        if (isRacing) return;
+
+        // Validate and collect all bets
         boolean hasBets = false;
         int totalBetAmount = 0;
+        boolean hasInvalidBets = false;
+        String errorMessage = "";
 
-        for (Duck horse : horses) {
-            if (horse.getBetAmount() > 0) {
-                hasBets = true;
-                totalBetAmount += horse.getBetAmount();
+        for (int i = 0; i < ducks.size(); i++) {
+            Duck duck = ducks.get(i);
+            String betText = ((EditText)((View)raceTrackList.getChildAt(i)).findViewById(R.id.betAmount)).getText().toString().trim();
+            
+            if (!betText.isEmpty()) {
+                try {
+                    int betAmount = Integer.parseInt(betText);
+                    if (betAmount <= 0) {
+                        hasInvalidBets = true;
+                        errorMessage = "Số tiền cược phải lớn hơn 0";
+                        break;
+                    }
+                    if (betAmount < 1000) {
+                        hasInvalidBets = true;
+                        errorMessage = "Số tiền cược tối thiểu là 1,000 VND";
+                        break;
+                    }
+                    duck.setBetAmount(betAmount);
+                    hasBets = true;
+                    totalBetAmount += betAmount;
+                } catch (NumberFormatException e) {
+                    hasInvalidBets = true;
+                    errorMessage = "Số tiền cược không hợp lệ";
+                    break;
+                }
             }
         }
 
-        if (!hasBets) {
-            Toast.makeText(this, "Vui lòng đặt cược trước khi bắt đầu!", Toast.LENGTH_SHORT).show();
+        if (hasInvalidBets) {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int currentBalance = prefs.getInt("balance", 0);
-        if (totalBetAmount > currentBalance) {
-            Toast.makeText(this, "Số dư không đủ!", Toast.LENGTH_SHORT).show();
+        if (!hasBets) {
+            Toast.makeText(this, "Vui lòng đặt cược trước khi bắt đầu", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Check if user has enough balance for all bets
+        if (totalBetAmount > currentUser.getBalance()) {
+            Toast.makeText(this, "Số dư không đủ cho tổng số tiền cược", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Deduct total bet amount
+        currentUser.setBalance(currentUser.getBalance() - totalBetAmount);
+        updateBalance();
 
         isRacing = true;
         startButton.setEnabled(false);
         resetButton.setEnabled(false);
         backButton.setEnabled(false);
 
-        // Deduct bet amounts from balance
-        prefs.edit().putInt("balance", currentBalance - totalBetAmount).apply();
-        updateBalance();
-
-//        playRaceSound();
+        // Start race simulation
         simulateRace();
     }
 
     private void simulateRace() {
-        Handler handler = new Handler();
-        final int[] raceStep = {0};
-        final int maxSteps = 100;
+        if (!isRacing) return;
 
-        Runnable raceRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (raceStep[0] < maxSteps) {
-                    // Update horse positions
-                    for (Duck horse : horses) {
-                        int speed = random.nextInt(3) + 1; // Random speed 1-3
-                        horse.setPosition(Math.min(100, horse.getPosition() + speed));
-                    }
+        boolean raceFinished = false;
+        for (int i = 0; i < ducks.size(); i++) {
+            Duck duck = ducks.get(i);
+            int currentPosition = duck.getPosition();
+            int speed = random.nextInt(20) + 5; // Random speed between 5-25
+            int newPosition = currentPosition + speed;
 
-                    adapter.notifyDataSetChanged();
-                    raceStep[0]++;
-
-                    // Check for winner
-                    Duck winner = null;
-                    for (Duck horse : horses) {
-                        if (horse.getPosition() >= 100) {
-                            winner = horse;
-                            break;
-                        }
-                    }
-
-                    if (winner != null) {
-                        finishRace(winner);
-                    } else {
-                        handler.postDelayed(this, 100);
-                    }
-                } else {
-                    // Time limit reached, find horse with highest position
-                    Duck winner = Collections.max(horses,
-                            Comparator.comparingInt(Duck::getPosition));
-                    finishRace(winner);
-                }
+            if (newPosition >= trackWidth) {
+                newPosition = trackWidth;
+                raceFinished = true;
             }
-        };
 
-        handler.post(raceRunnable);
+            duck.setPosition(newPosition);
+            adapter.updateDuckPosition(i, newPosition, trackWidth);
+        }
+
+        if (raceFinished) {
+            finishRace();
+        } else {
+            handler.postDelayed(this::simulateRace, 50); // Update every 50ms for smooth animation
+        }
     }
 
-    private void finishRace(Duck winner) {
+    private void finishRace() {
         isRacing = false;
         startButton.setEnabled(true);
         resetButton.setEnabled(true);
@@ -166,47 +191,49 @@ public class MainActivity extends AppCompatActivity {
             raceSound.stop();
         }
 
-        // Calculate winnings
-        int totalWinnings = 0;
-        if (winner.getBetAmount() > 0) {
-            totalWinnings = winner.getBetAmount() * 5; // 5x multiplier for winner
+        // Find winner
+        Duck winner = null;
+        int maxPosition = -1;
+        for (Duck duck : ducks) {
+            if (duck.getPosition() > maxPosition) {
+                maxPosition = duck.getPosition();
+                winner = duck;
+            }
         }
 
-        // Update balance
-        int currentBalance = prefs.getInt("balance", 0);
-        prefs.edit().putInt("balance", currentBalance + totalWinnings).apply();
+        if (winner != null) {
+            int winnerBet = winner.getBetAmount();
+            int winnings = 0;
+            if (winnerBet > 0) {
+                winnings = winnerBet * 2;
+                currentUser.setBalance(currentUser.getBalance() + winnings);
+                updateBalance();
+            }
 
-        // Show result
-        Intent resultIntent = new Intent(this, WinActivity.class);
-        resultIntent.putExtra("winner", winner.getName());
-        resultIntent.putExtra("winnings", totalWinnings);
-        startActivity(resultIntent);
+            Intent intent = new Intent(this, WinActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            intent.putExtra("winner", winner.getName());
+            intent.putExtra("winnings", winnings);
+            startActivity(intent);
+        }
     }
 
     private void resetRace() {
-        for (Duck horse : horses) {
-            horse.setPosition(0);
-            horse.setBetAmount(0);
-        }
-        adapter.notifyDataSetChanged();
-        updateBalance();
+        if (isRacing) return;
+        adapter.resetPositions();
     }
 
     private void updateBalance() {
-        int balance = prefs.getInt("balance", 0);
-        balanceText.setText("Số dư: " + balance + " VND");
+        balanceText.setText(String.format("Số dư: %,d VND", currentUser.getBalance()));
     }
 
-//    private void playRaceSound() {
-//        try {
-//            raceSound = MediaPlayer.create(this, R.raw.race_sound);
-//            if (raceSound != null) {
-//                raceSound.start();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void initializeDucks() {
+        ducks = new ArrayList<>();
+        ducks.add(new Duck("Thunder", "🐎", 0, 0));
+        ducks.add(new Duck("Lightning", "🐴", 0, 0));
+        ducks.add(new Duck("Storm", "🦄", 0, 0));
+        ducks.add(new Duck("Wind", "🐎", 0, 0));
+    }
 
     @Override
     protected void onDestroy() {
@@ -215,5 +242,15 @@ public class MainActivity extends AppCompatActivity {
             raceSound.release();
             raceSound = null;
         }
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onBetPlaced(int position, int amount) {
+        Duck duck = ducks.get(position);
+        duck.setBetAmount(amount);
+        Toast.makeText(this, 
+            "Đã đặt cược " + amount + " VND cho vịt " + duck.getName(), 
+            Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Grass background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#2E7D32" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    
+    <!-- Track lines -->
+    <item android:top="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <stroke android:color="#FFFFFF" android:width="1dp" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    
+    <!-- Track markings -->
+    <item android:top="2dp" android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <stroke android:color="#FFD700" android:width="1dp" android:dashWidth="10dp" android:dashGap="10dp" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</layer-list> 

@@ -1,7 +1,6 @@
 package com.example.duckrace;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.Button;
@@ -12,14 +11,19 @@ public class WinActivity extends AppCompatActivity {
     private TextView resultTitle, winnerText, winningsText, balanceText;
     private Button playAgainButton, mainMenuButton;
     private MediaPlayer resultSound;
-    private SharedPreferences prefs;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_win);
 
-        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
+        // Get current user from intent
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser == null) {
+            finish();
+            return;
+        }
 
         initViews();
         displayResult();
@@ -38,7 +42,6 @@ public class WinActivity extends AppCompatActivity {
     private void displayResult() {
         String winner = getIntent().getStringExtra("winner");
         int winnings = getIntent().getIntExtra("winnings", 0);
-        int balance = prefs.getInt("balance", 0);
 
         winnerText.setText("🏆 " + winner + " 🏆");
 
@@ -46,20 +49,19 @@ public class WinActivity extends AppCompatActivity {
             resultTitle.setText("🎉 CHÚC MỪNG! 🎉");
             winningsText.setText("Bạn đã thắng: " + winnings + " VND");
             winningsText.setTextColor(getResources().getColor(android.R.color.holo_green_light));
-//            playWinSound();
         } else {
             resultTitle.setText("😔 THẤT BẠI 😔");
             winningsText.setText("Bạn đã thua cuộc");
             winningsText.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-//            playLoseSound();
         }
 
-        balanceText.setText("Số dư hiện tại: " + balance + " VND");
+        balanceText.setText("Số dư hiện tại: " + currentUser.getBalance() + " VND");
     }
 
     private void setupListeners() {
         playAgainButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, RaceActivity.class);
+            intent.putExtra("currentUser", currentUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
@@ -67,33 +69,12 @@ public class WinActivity extends AppCompatActivity {
 
         mainMenuButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("currentUser", currentUser);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         });
     }
-
-//    private void playWinSound() {
-//        try {
-//            resultSound = MediaPlayer.create(this, R.raw.win_sound);
-//            if (resultSound != null) {
-//                resultSound.start();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private void playLoseSound() {
-//        try {
-//            resultSound = MediaPlayer.create(this, R.raw.lose_sound);
-//            if (resultSound != null) {
-//                resultSound.start();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     protected void onDestroy() {

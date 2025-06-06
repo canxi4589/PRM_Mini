@@ -1,7 +1,6 @@
 package com.example.duckrace;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +11,12 @@ public class DuckRaceAdapter extends BaseAdapter {
     private Context context;
     private List<Duck> horses;
     private LayoutInflater inflater;
-    private SharedPreferences prefs;
+    private User currentUser;
 
-    public DuckRaceAdapter(Context context, List<Duck> horses, SharedPreferences prefs) {
+    public DuckRaceAdapter(Context context, List<Duck> horses, User currentUser) {
         this.context = context;
         this.horses = horses;
-        this.prefs = prefs;
+        this.currentUser = currentUser;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -85,7 +84,6 @@ public class DuckRaceAdapter extends BaseAdapter {
                     return;
                 }
 
-                int currentBalance = prefs.getInt("balance", 0);
                 int totalCurrentBets = 0;
                 for (Duck h : horses) {
                     totalCurrentBets += h.getBetAmount();
@@ -94,7 +92,7 @@ public class DuckRaceAdapter extends BaseAdapter {
                 // Remove current bet for this horse from total
                 totalCurrentBets -= horse.getBetAmount();
 
-                if (totalCurrentBets + betAmount > currentBalance) {
+                if (totalCurrentBets + betAmount > currentUser.getBalance()) {
                     Toast.makeText(context, "Số dư không đủ!", Toast.LENGTH_SHORT).show();
                     return;
                 }

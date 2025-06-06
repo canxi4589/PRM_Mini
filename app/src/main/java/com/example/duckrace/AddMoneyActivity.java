@@ -1,7 +1,6 @@
 package com.example.duckrace;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,14 +10,20 @@ import androidx.appcompat.app.AppCompatActivity;
 public class AddMoneyActivity extends AppCompatActivity {
     private TextView currentBalanceText;
     private Button add10k, add50k, add100k, add500k, backButton;
-    private SharedPreferences prefs;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_money);
 
-        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
+        // Get current user from intent
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser == null) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         initViews();
         setupListeners();
@@ -40,27 +45,28 @@ public class AddMoneyActivity extends AppCompatActivity {
         add100k.setOnClickListener(v -> addMoney(100000));
         add500k.setOnClickListener(v -> addMoney(500000));
         backButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, OptionActivity.class));
+            Intent intent = new Intent(this, OptionActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
+            finish();
         });
     }
 
     private void addMoney(int amount) {
-        int currentBalance = prefs.getInt("balance", 0);
-        int newBalance = currentBalance + amount;
+        int newBalance = currentUser.getBalance() + amount;
 
         if (newBalance > 10000000) {
             Toast.makeText(this, "Số dư tối đa là 10,000,000 VND", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        prefs.edit().putInt("balance", newBalance).apply();
+        currentUser.setBalance(newBalance);
         updateBalance();
 
         Toast.makeText(this, "Đã nạp " + amount + " VND thành công!", Toast.LENGTH_SHORT).show();
     }
 
     private void updateBalance() {
-        int balance = prefs.getInt("balance", 0);
-        currentBalanceText.setText("Số dư hiện tại: " + balance + " VND");
+        currentBalanceText.setText("Số dư hiện tại: " + currentUser.getBalance() + " VND");
     }
 }
