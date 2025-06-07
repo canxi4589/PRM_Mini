@@ -13,9 +13,16 @@
         android:theme="@style/Theme.DuckRace"
         tools:targetApi="31">
         <activity
+            android:name=".InstructionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WinActivity"
+            android:exported="false" />
+        <activity
             android:name=".OptionActivity"
             android:exported="false" />
-        <activity android:name=".PlayerSelectionActivity"
+        <activity
+            android:name=".PlayerSelectionActivity"
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"
@@ -25,6 +32,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,7 +41,6 @@
         <activity android:name=".ResultActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".AddMoneyActivity" />
-
     </application>
 
 </manifest>

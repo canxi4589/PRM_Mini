@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MiniDuck Race</string>
+    <string name="app_name">Duck Race Championship</string>
 
     <!-- Player Setup Screen -->
     <string name="title_player_setup">Player Setup</string>
@@ -40,5 +40,38 @@
     <string name="value_200k">200000</string>
     <string name="confirm_recharge">💳 XÁC NHẬN NẠP TIỀN</string>
     <string name="button_back">🔙 Quay lại</string>
+
+
+    <!-- UI Text -->
+    <string name="title_duck_race">🦆 DUCK RACE CHAMPIONSHIP 🦆</string>
+    <string name="race_track_title">🏁 RACE TRACK 🏁</string>
+    <string name="betting_title">💰 Place Your Bet! 💰</string>
+
+    <!-- Button Text -->
+    <string name="btn_racing">RACING...</string>
+    <string name="btn_reset">RESET</string>
+
+    <!-- Duck Names -->
+    <string name="duck_1_name">Speedy Duck</string>
+    <string name="duck_2_name">Turbo Duck</string>
+    <string name="duck_3_name">Flash Duck</string>
+    <string name="duck_4_name">Rocket Duck</string>
+
+    <!-- Betting Options -->
+    <string name="bet_duck_1">Duck 1</string>
+    <string name="bet_duck_2">Duck 2</string>
+    <string name="bet_duck_3">Duck 3</string>
+    <string name="bet_duck_4">Duck 4</string>
+
+    <!-- Game Messages -->
+    <string name="winner_message_format">🏆 %s WINS! 🏆</string>
+    <string name="bet_won">🎉 CONGRATULATIONS! You won the bet! 🎉</string>
+    <string name="bet_lost">💔 Better luck next time!</string>
+    <string name="place_bet_first">Please place your bet first!</string>
+    <string name="winner_label">🏆 WINNER! 🏆</string>
+
+    <!-- Lane Info -->
+    <string name="lane_format">Lane %d</string>
+    <string name="progress_format">%d%%</string>
 </resources>
 

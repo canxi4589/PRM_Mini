@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/horse_item_background"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/horseIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🐎"
+            android:textSize="24sp"
+            android:layout_marginEnd="10dp" />
+
+        <TextView
+            android:id="@+id/horseName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Horse Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_bar_drawable" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/betAmountEdit"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:hint="Số tiền cược (VND)"
+            android:textColorHint="#CCCCCC"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/edittext_small"
+            android:padding="8dp"
+            android:inputType="number"
+            android:layout_marginEnd="10dp" />
+
+        <Button
+            android:id="@+id/betButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="💰 ĐẶT CƯỢC"
+            android:textSize="12sp"
+            android:background="@drawable/button_bet"
+            android:textColor="#FFFFFF"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

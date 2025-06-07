@@ -1,85 +1,72 @@
 package com.example.duckrace;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddMoneyActivity extends AppCompatActivity {
-    private EditText amountEditText;
-    private Button confirmButton, suggest50k, suggest100k, suggest200k, backButton;
-    private SharedPreferences prefs;
-    private String currentUsername;
+    private TextView currentBalanceText;
+    private Button add10k, add50k, add100k, add500k, backButton;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_money);
-        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
-        currentUsername = prefs.getString("username", "Player");
+
+        // Get current user from intent
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser == null) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         initViews();
-
-        suggest50k.setOnClickListener(v -> amountEditText.setText(R.string.value_50k));
-        suggest100k.setOnClickListener(v -> amountEditText.setText(R.string.value_100k));
-        suggest200k.setOnClickListener(v -> amountEditText.setText(R.string.value_200k));
-
-        confirmButton.setOnClickListener(v -> {
-            String input = amountEditText.getText().toString().trim();
-            if (input.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập số tiền!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            int maxAmount = 1_000_000_000; // Max 1b VNĐ
-            int amount;
-
-            try {
-                amount = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Số tiền không hợp lệ hoặc quá lớn!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (amount <= 0) {
-                Toast.makeText(this, "Số tiền phải lớn hơn 0!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (amount > maxAmount) {
-                Toast.makeText(this, "Số tiền nạp tối đa là " + maxAmount + " VND!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Toast.makeText(this, "Nạp " + amount + " VND thành công!", Toast.LENGTH_SHORT).show();
-            int currentBalance = prefs.getInt("balance_" + currentUsername, 0);
-            int newBalance = currentBalance + amount;
-
-            if (newBalance < 0) {
-                Toast.makeText(this, "Số dư vượt giới hạn cho phép!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            prefs.edit().putInt("balance_" + currentUsername, newBalance).apply();
-
-            Intent intent = new Intent(this, OptionActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-        backButton.setOnClickListener(v -> finish());
+        setupListeners();
+        updateBalance();
     }
 
     private void initViews() {
-        amountEditText = findViewById(R.id.amountEditText);
-        confirmButton = findViewById(R.id.confirmButton);
-        suggest50k = findViewById(R.id.suggest50k);
-        suggest100k = findViewById(R.id.suggest100k);
-        suggest200k = findViewById(R.id.suggest200k);
+        currentBalanceText = findViewById(R.id.currentBalanceText);
+        add10k = findViewById(R.id.add10k);
+        add50k = findViewById(R.id.add50k);
+        add100k = findViewById(R.id.add100k);
+        add500k = findViewById(R.id.add500k);
         backButton = findViewById(R.id.backButton);
+    }
+
+    private void setupListeners() {
+        add10k.setOnClickListener(v -> addMoney(10000));
+        add50k.setOnClickListener(v -> addMoney(50000));
+        add100k.setOnClickListener(v -> addMoney(100000));
+        add500k.setOnClickListener(v -> addMoney(500000));
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OptionActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    private void addMoney(int amount) {
+        int newBalance = currentUser.getBalance() + amount;
+
+        if (newBalance > 10000000) {
+            Toast.makeText(this, "Số dư tối đa là 10,000,000 VND", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentUser.setBalance(newBalance);
+        updateBalance();
+
+        Toast.makeText(this, "Đã nạp " + amount + " VND thành công!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateBalance() {
+        currentBalanceText.setText("Số dư hiện tại: " + currentUser.getBalance() + " VND");
     }
 }

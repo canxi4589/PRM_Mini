@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    android:background="@drawable/background_login"
+    android:gravity="center">
+
+    <!-- Header Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🦆 ĐUA VỊT"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#FFD700"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Result Status -->
+    <TextView
+        android:id="@+id/resultTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎉 CHÚC MỪNG! 🎉"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="30dp"
+        android:gravity="center" />
+
+    <!-- Winner Information -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/edittext_background"
+        android:padding="25dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CON VỊT CHIẾN THẮNG"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#CCCCCC"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/winnerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏆 VỊT SỐ 1 🏆"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FFD700"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Winnings Information -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/edittext_background"
+        android:padding="25dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KẾT QUẢ CƯỢC"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#CCCCCC"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/winningsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bạn đã thắng: 50,000 VND"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#00FF00"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Current Balance -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/edittext_background"
+        android:padding="25dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SỐ DƯ HIỆN TẠI"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#CCCCCC"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/balanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Số dư hiện tại: 100,000 VND"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFD700"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/playAgainButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎮 CHƠI LẠI"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/button_primary"
+            android:textColor="#FFFFFF"
+            android:padding="15dp"
+            android:layout_marginBottom="15dp" />
+
+        <Button
+            android:id="@+id/mainMenuButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏠 MENU CHÍNH"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/button_secondary"
+            android:textColor="#FFFFFF"
+            android:padding="15dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

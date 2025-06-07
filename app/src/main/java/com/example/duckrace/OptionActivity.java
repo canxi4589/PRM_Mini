@@ -1,7 +1,6 @@
 package com.example.duckrace;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.Button;
@@ -16,15 +15,18 @@ import androidx.core.view.WindowInsetsCompat;
 public class OptionActivity extends AppCompatActivity {
     private TextView welcomeText, balanceText;
     private Button playButton, addMoneyButton, instructionsButton, logoutButton, pickNumOfPlayers;
-    private SharedPreferences prefs;
+    private User currentUser;
     private MediaPlayer backgroundMusic;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_option);
-        prefs = getSharedPreferences("HorseRacingPrefs", MODE_PRIVATE);
-        if (!prefs.getBoolean("isLoggedIn", false)) {
+
+        // Get current user from intent
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser == null) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
@@ -39,6 +41,7 @@ public class OptionActivity extends AppCompatActivity {
             return insets;
         });
     }
+
     private void initViews() {
         welcomeText = findViewById(R.id.welcomeText);
         balanceText = findViewById(R.id.balanceText);
@@ -51,48 +54,38 @@ public class OptionActivity extends AppCompatActivity {
 
     private void setupListeners() {
         playButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
         });
 
         addMoneyButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddMoneyActivity.class);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
             finish();
         });
-//
-//        instructionsButton.setOnClickListener(v -> {
-//            startActivity(new Intent(this, InstructionsActivity.class));
-//        });
+
         pickNumOfPlayers.setOnClickListener(v -> {
-           startActivity(new Intent(this, PlayerSelectionActivity.class));
+            Intent intent = new Intent(this, PlayerSelectionActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
         });
 
         logoutButton.setOnClickListener(v -> {
-            prefs.edit().putBoolean("isLoggedIn", false).apply();
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        });
+        instructionsButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, InstructionActivity.class));
             finish();
         });
     }
 
     private void updateUI() {
-        String username = prefs.getString("username", "Player");
-        int balance = prefs.getInt("balance_" + username, 1000);
-
-        welcomeText.setText("Chào mừng, " + username + "!");
-        balanceText.setText("Số dư: " + balance + " VND");
+        welcomeText.setText("Chào mừng, " + currentUser.getUsername() + "!");
+        balanceText.setText("Số dư: " + currentUser.getBalance() + " VND");
     }
-
-//    private void playBackgroundMusic() {
-//        try {
-//            backgroundMusic = MediaPlayer.create(this, R.raw.background_music);
-//            if (backgroundMusic != null) {
-//                backgroundMusic.setLooping(true);
-//                backgroundMusic.start();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     protected void onResume() {

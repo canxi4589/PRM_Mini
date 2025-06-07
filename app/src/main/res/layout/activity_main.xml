@@ -1,25 +1,82 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/background_race">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <SeekBar android:id="@+id/seekBarDuck1" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck1" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
-        <SeekBar android:id="@+id/seekBarDuck2" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck2" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
-        <SeekBar android:id="@+id/seekBarDuck3" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck3" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
-        <SeekBar android:id="@+id/seekBarDuck4" android:layout_width="match_parent" android:layout_height="24dp" android:max="100" android:progress="0" android:thumb="@drawable/duck4" android:progressDrawable="@drawable/seekbar_road" android:thumbTint="@null"/>
+        <!-- Top Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-        <RadioGroup android:id="@+id/betGroup" android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <RadioButton android:id="@+id/betDuck1" android:text="Vịt 1"/>
-            <RadioButton android:id="@+id/betDuck2" android:text="Vịt 2"/>
-            <RadioButton android:id="@+id/betDuck3" android:text="Vịt 3"/>
-            <RadioButton android:id="@+id/betDuck4" android:text="Vịt 4"/>
-        </RadioGroup>
+            <TextView
+                android:id="@+id/balanceText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Start"/>
-        <Button android:id="@+id/btnReset" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Reset"/>
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quay lại" />
+        </LinearLayout>
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="Đua Vịt"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Race Tracks ListView -->
+        <ListView
+            android:id="@+id/raceTrackList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:padding="8dp"
+            android:minHeight="320dp"
+            android:nestedScrollingEnabled="false"
+            android:scrollbars="none" />
+
+        <!-- Bottom Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/startButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Bắt đầu" />
+
+            <Button
+                android:id="@+id/resetButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Reset" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
