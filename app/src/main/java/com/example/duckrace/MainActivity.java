@@ -211,7 +211,8 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
         backButton.setEnabled(true);
 
         if (raceSound != null) {
-            raceSound.stop();
+            raceSound.release();
+            raceSound = null;
         }
 
         // Calculate winnings
@@ -220,7 +221,12 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
         if (winnerBet > 0) {
             winnings = winnerBet * 2; // 2x payout for correct bet
             currentUser.setBalance(currentUser.getBalance() + winnings);
+            raceSound = MediaPlayer.create(this, R.raw.win);
+            raceSound.start();
             updateBalance();
+        }else{
+            raceSound = MediaPlayer.create(this, R.raw.lose);
+            raceSound.start();
         }
 
         // Show result
