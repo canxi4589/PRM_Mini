@@ -1,46 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_height="100dp"
+    android:background="@drawable/racetrack">
 
-    <FrameLayout
-        android:id="@+id/trackContainer"
+    <!-- SeekBar for duck progress -->
+    <SeekBar
+        android:id="@+id/duckSeekBar"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@drawable/race_track_background">
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:max="100"
+        android:progress="0"
+        android:thumb="@drawable/duck1"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:focusable="false"
+        android:clickable="false"
+        android:splitTrack="false"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp" />
 
-        <ImageView
-            android:id="@+id/duckImage"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/duck1" />
-
-        <TextView
-            android:id="@+id/duckName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:layout_marginStart="76dp"
-            android:textColor="#000000"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/betAmount"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bet_input_background"
-            android:hint="Số tiền cược"
-            android:inputType="number"
-            android:padding="8dp"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-
-    </FrameLayout>
-
-</FrameLayout> 
+    <!-- Duck name -->
+    <TextView
+        android:id="@+id/duckName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="8dp"
+        android:text="Thunder"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+    <EditText
+        android:id="@+id/betAmount"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end|center_vertical"
+        android:hint="Bet"
+        android:inputType="number"
+        android:background="@drawable/bet_input_background"
+        android:textColor="#000"
+        android:textColorHint="#888"
+        android:padding="8dp"
+        android:layout_marginEnd="16dp"/>
+</FrameLayout>

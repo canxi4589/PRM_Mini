@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.List;
@@ -51,10 +52,8 @@ public class RaceTrackAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.race_track_item, parent, false);
             holder = new ViewHolder();
-            holder.duckImage = convertView.findViewById(R.id.duckImage);
+            holder.duckSeekBar = convertView.findViewById(R.id.duckSeekBar);
             holder.duckName = convertView.findViewById(R.id.duckName);
-            holder.betAmount = convertView.findViewById(R.id.betAmount);
-            holder.trackContainer = convertView.findViewById(R.id.trackContainer);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -62,27 +61,21 @@ public class RaceTrackAdapter extends BaseAdapter {
 
         Duck duck = ducks.get(position);
 
-        // Set duck image
-        int duckImageRes = getDuckImageResource(position);
-        holder.duckImage.setImageResource(duckImageRes);
-        
         // Set duck name
         holder.duckName.setText(duck.getName());
 
-        // Update duck position
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.duckImage.getLayoutParams();
-        params.leftMargin = duck.getPosition();
-        holder.duckImage.setLayoutParams(params);
+        // Set SeekBar progress
+        holder.duckSeekBar.setProgress(duck.getPosition());
 
-        // Set bet amount if exists
-        if (duck.getBetAmount() > 0) {
-            holder.betAmount.setText(String.valueOf(duck.getBetAmount()));
-        } else {
-            holder.betAmount.setText("");
-        }
+        // Optionally, set the thumb dynamically if you have different duck images
+        // holder.duckSeekBar.setThumb(context.getDrawable(getDuckImageResource(position)));
+
+        // Disable user interaction
+        holder.duckSeekBar.setEnabled(false);
 
         return convertView;
     }
+
 
     private int getDuckImageResource(int position) {
         switch (position) {
@@ -109,9 +102,8 @@ public class RaceTrackAdapter extends BaseAdapter {
     }
 
     private static class ViewHolder {
-        ImageView duckImage;
+        SeekBar duckSeekBar;
         TextView duckName;
         EditText betAmount;
-        FrameLayout trackContainer;
     }
 } 

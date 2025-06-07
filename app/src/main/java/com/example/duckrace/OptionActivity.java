@@ -76,6 +76,10 @@ public class OptionActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
+        instructionsButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, InstructionActivity.class));
+            finish();
+        });
     }
 
     private void updateUI() {

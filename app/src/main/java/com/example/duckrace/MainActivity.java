@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +29,8 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
     private Handler handler = new Handler();
     private List<Duck> ducks;
     private RaceTrackAdapter adapter;
-    private int trackWidth;
+    private static final int TRACK_MAX_PROGRESS = 100; // SeekBar max value
+    private static final int RACE_UPDATE_INTERVAL = 100; // Update every 100ms
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +53,6 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
         // Initialize adapter
         adapter = new RaceTrackAdapter(this, ducks, currentUser, this);
         raceTrackList.setAdapter(adapter);
-
-        // Get track width after layout is ready
-        raceTrackList.post(() -> {
-            trackWidth = raceTrackList.getWidth() - 200; // Account for padding and margins
-        });
     }
 
     private void initViews() {
@@ -100,28 +97,34 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
 
         for (int i = 0; i < ducks.size(); i++) {
             Duck duck = ducks.get(i);
-            String betText = ((EditText)((View)raceTrackList.getChildAt(i)).findViewById(R.id.betAmount)).getText().toString().trim();
-            
-            if (!betText.isEmpty()) {
-                try {
-                    int betAmount = Integer.parseInt(betText);
-                    if (betAmount <= 0) {
-                        hasInvalidBets = true;
-                        errorMessage = "Số tiền cược phải lớn hơn 0";
-                        break;
+            View listItem = raceTrackList.getChildAt(i);
+            if (listItem != null) {
+                EditText betAmountEditText = listItem.findViewById(R.id.betAmount);
+                if (betAmountEditText != null) {
+                    String betText = betAmountEditText.getText().toString().trim();
+
+                    if (!betText.isEmpty()) {
+                        try {
+                            int betAmount = Integer.parseInt(betText);
+                            if (betAmount <= 0) {
+                                hasInvalidBets = true;
+                                errorMessage = "Số tiền cược phải lớn hơn 0";
+                                break;
+                            }
+                            if (betAmount < 1000) {
+                                hasInvalidBets = true;
+                                errorMessage = "Số tiền cược tối thiểu là 1,000 VND";
+                                break;
+                            }
+                            duck.setBetAmount(betAmount);
+                            hasBets = true;
+                            totalBetAmount += betAmount;
+                        } catch (NumberFormatException e) {
+                            hasInvalidBets = true;
+                            errorMessage = "Số tiền cược không hợp lệ";
+                            break;
+                        }
                     }
-                    if (betAmount < 1000) {
-                        hasInvalidBets = true;
-                        errorMessage = "Số tiền cược tối thiểu là 1,000 VND";
-                        break;
-                    }
-                    duck.setBetAmount(betAmount);
-                    hasBets = true;
-                    totalBetAmount += betAmount;
-                } catch (NumberFormatException e) {
-                    hasInvalidBets = true;
-                    errorMessage = "Số tiền cược không hợp lệ";
-                    break;
                 }
             }
         }
@@ -159,29 +162,49 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
         if (!isRacing) return;
 
         boolean raceFinished = false;
+        Duck winner = null;
+
         for (int i = 0; i < ducks.size(); i++) {
             Duck duck = ducks.get(i);
             int currentPosition = duck.getPosition();
-            int speed = random.nextInt(20) + 5; // Random speed between 5-25
+
+            // Random speed between 1-4 progress points per update
+            int speed = random.nextInt(4) + 1;
             int newPosition = currentPosition + speed;
 
-            if (newPosition >= trackWidth) {
-                newPosition = trackWidth;
-                raceFinished = true;
+            // Check if duck finished the race
+            if (newPosition >= TRACK_MAX_PROGRESS) {
+                newPosition = TRACK_MAX_PROGRESS;
+                if (!raceFinished) {
+                    raceFinished = true;
+                    winner = duck;
+                }
             }
 
             duck.setPosition(newPosition);
-            adapter.updateDuckPosition(i, newPosition, trackWidth);
+
+            // Update SeekBar progress
+            updateSeekBarProgress(i, newPosition);
         }
 
-        if (raceFinished) {
-            finishRace();
+        if (raceFinished && winner != null) {
+            finishRace(winner);
         } else {
-            handler.postDelayed(this::simulateRace, 50); // Update every 50ms for smooth animation
+            handler.postDelayed(this::simulateRace, RACE_UPDATE_INTERVAL);
         }
     }
 
-    private void finishRace() {
+    private void updateSeekBarProgress(int duckIndex, int progress) {
+        View listItem = raceTrackList.getChildAt(duckIndex);
+        if (listItem != null) {
+            SeekBar seekBar = listItem.findViewById(R.id.duckSeekBar);
+            if (seekBar != null) {
+                seekBar.setProgress(progress);
+            }
+        }
+    }
+
+    private void finishRace(Duck winner) {
         isRacing = false;
         startButton.setEnabled(true);
         resetButton.setEnabled(true);
@@ -191,36 +214,60 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
             raceSound.stop();
         }
 
-        // Find winner
-        Duck winner = null;
-        int maxPosition = -1;
-        for (Duck duck : ducks) {
-            if (duck.getPosition() > maxPosition) {
-                maxPosition = duck.getPosition();
-                winner = duck;
-            }
+        // Calculate winnings
+        int winnerBet = winner.getBetAmount();
+        int winnings = 0;
+        if (winnerBet > 0) {
+            winnings = winnerBet * 2; // 2x payout for correct bet
+            currentUser.setBalance(currentUser.getBalance() + winnings);
+            updateBalance();
         }
 
-        if (winner != null) {
-            int winnerBet = winner.getBetAmount();
-            int winnings = 0;
-            if (winnerBet > 0) {
-                winnings = winnerBet * 2;
-                currentUser.setBalance(currentUser.getBalance() + winnings);
-                updateBalance();
-            }
-
-            Intent intent = new Intent(this, WinActivity.class);
-            intent.putExtra("currentUser", currentUser);
-            intent.putExtra("winner", winner.getName());
-            intent.putExtra("winnings", winnings);
-            startActivity(intent);
+        // Show result
+        String message = "🏆 " + winner.getName() + " thắng!";
+        if (winnings > 0) {
+            message += "\nBạn thắng: " + String.format("%,d VND", winnings);
+        } else {
+            message += "\nBạn không đặt cược cho vịt thắng cuộc.";
         }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+        // Optional: Start WinActivity if you have it
+        Intent intent = new Intent(this, WinActivity.class);
+        intent.putExtra("currentUser", currentUser);
+        intent.putExtra("winner", winner.getName());
+        intent.putExtra("winnings", winnings);
+        startActivity(intent);
     }
 
     private void resetRace() {
         if (isRacing) return;
-        adapter.resetPositions();
+
+        // Reset duck positions
+        for (Duck duck : ducks) {
+            duck.setPosition(0);
+            duck.setBetAmount(0);
+        }
+
+        // Reset all SeekBars to 0
+        for (int i = 0; i < ducks.size(); i++) {
+            updateSeekBarProgress(i, 0);
+        }
+
+        // Clear bet input fields
+        for (int i = 0; i < raceTrackList.getChildCount(); i++) {
+            View listItem = raceTrackList.getChildAt(i);
+            if (listItem != null) {
+                EditText betAmountEditText = listItem.findViewById(R.id.betAmount);
+                if (betAmountEditText != null) {
+                    betAmountEditText.setText("");
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this, "Đã reset cuộc đua", Toast.LENGTH_SHORT).show();
     }
 
     private void updateBalance() {
@@ -249,8 +296,8 @@ public class MainActivity extends AppCompatActivity implements RaceTrackAdapter.
     public void onBetPlaced(int position, int amount) {
         Duck duck = ducks.get(position);
         duck.setBetAmount(amount);
-        Toast.makeText(this, 
-            "Đã đặt cược " + amount + " VND cho vịt " + duck.getName(), 
-            Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,
+                "Đã đặt cược " + String.format("%,d", amount) + " VND cho vịt " + duck.getName(),
+                Toast.LENGTH_SHORT).show();
     }
 }

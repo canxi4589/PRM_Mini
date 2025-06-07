@@ -1,89 +1,82 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     android:background="@drawable/background_race">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        android:background="#88000000">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/balanceText"
-            android:layout_width="0dp"
+        <!-- Top Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Số dư: 0 VND"
-            android:textColor="#FFD700"
-            android:textSize="16sp"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/balanceText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quay lại" />
+        </LinearLayout>
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="Đua Vịt"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:text="← Quay lại"
-            android:textSize="12sp"
-            android:background="@drawable/button_small"
-            android:textColor="#FFFFFF" />
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🏁 ĐƯỜNG ĐUA NGỰA 🏁"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:padding="15dp"
-        android:background="#88FF0000" />
-
-    <ListView
-        android:id="@+id/horseListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="#44FFFFFF"
-        android:dividerHeight="2dp"
-        android:padding="10dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        android:background="#88000000">
-
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="0dp"
+        <!-- Race Tracks ListView -->
+        <ListView
+            android:id="@+id/raceTrackList"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="🚀 BẮT ĐẦU"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:background="@drawable/button_primary"
-            android:textColor="#FFFFFF"
-            android:layout_marginEnd="10dp"
-            android:padding="15dp" />
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:padding="8dp"
+            android:minHeight="320dp"
+            android:nestedScrollingEnabled="false"
+            android:scrollbars="none" />
 
-        <Button
-            android:id="@+id/resetButton"
-            android:layout_width="0dp"
+        <!-- Bottom Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="🔄 RESET"
-            android:textSize="16sp"
-            android:background="@drawable/button_secondary"
-            android:textColor="#FFFFFF"
-            android:padding="15dp" />
+            android:orientation="horizontal"
+            android:padding="16dp">
 
+            <Button
+                android:id="@+id/startButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Bắt đầu" />
+
+            <Button
+                android:id="@+id/resetButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Reset" />
+        </LinearLayout>
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>
